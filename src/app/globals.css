@@ -134,6 +134,10 @@ button {
   animation: caption-rise 420ms ease-out 90ms both;
 }
 
+.music-toggle {
+  min-width: 11rem;
+}
+
 @keyframes reward-scan {
   0% {
     transform: translateX(-8%);

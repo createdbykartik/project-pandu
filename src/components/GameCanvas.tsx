@@ -5,9 +5,11 @@ import { useEffect, useRef, useState } from "react";
 import type { Game } from "phaser";
 
 import { milestones } from "@/content/milestones";
+import { createQuirkyMusic } from "@/game/audio/createQuirkyMusic";
 
 const STORAGE_KEY = "journey-of-stars-progress";
 const COMPLETED_STAGES_STORAGE_KEY = "journey-of-stars-completed-stages";
+const MUSIC_MUTED_STORAGE_KEY = "journey-of-stars-music-muted";
 
 type JourneyProgress = {
   highestMilestone: number;
@@ -39,14 +41,26 @@ function dispatchControl(control: JourneyControl, active: boolean) {
 
 export function GameCanvas() {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const musicRef = useRef<ReturnType<typeof createQuirkyMusic> | null>(null);
+  const musicMutedRef = useRef(false);
   const [gameReady, setGameReady] = useState(false);
   const [progress, setProgress] = useState<JourneyProgress>(defaultProgress);
   const [activeIndex, setActiveIndex] = useState(0);
   const [totalStars, setTotalStars] = useState(milestones.length);
   const [completedStages, setCompletedStages] = useState<number[]>([]);
   const [revealedStage, setRevealedStage] = useState<number | null>(null);
+  const [musicMuted, setMusicMuted] = useState(false);
+  const [musicStarted, setMusicStarted] = useState(false);
+
+  musicMutedRef.current = musicMuted;
 
   useEffect(() => {
+    const storedMutedValue = window.localStorage.getItem(MUSIC_MUTED_STORAGE_KEY);
+    const initialMusicMuted = storedMutedValue === "true";
+
+    setMusicMuted(initialMusicMuted);
+    musicRef.current = createQuirkyMusic(initialMusicMuted);
+
     const storedProgress = window.localStorage.getItem(STORAGE_KEY);
 
     if (storedProgress) {
@@ -125,6 +139,33 @@ export function GameCanvas() {
     window.addEventListener("journey-stage-complete", onStageComplete as EventListener);
     window.addEventListener("journey-reset", onReset);
 
+    const tryStartMusic = () => {
+      if (!musicRef.current || musicMutedRef.current) {
+        return;
+      }
+
+      void musicRef.current.ensureStarted().then(() => setMusicStarted(true));
+    };
+
+    const onVisibilityChange = () => {
+      if (!musicRef.current) {
+        return;
+      }
+
+      if (document.hidden) {
+        void musicRef.current.setMuted(true);
+        return;
+      }
+
+      if (!musicMutedRef.current) {
+        void musicRef.current.setMuted(false).then(() => setMusicStarted(true));
+      }
+    };
+
+    window.addEventListener("pointerdown", tryStartMusic, { passive: true });
+    window.addEventListener("keydown", tryStartMusic);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
     void import("@/game/createJourneyGame").then(async ({ createJourneyGame }) => {
       if (!mounted || !containerRef.current) {
         return;
@@ -142,9 +183,39 @@ export function GameCanvas() {
       window.removeEventListener("journey-milestone", onMilestone as EventListener);
       window.removeEventListener("journey-stage-complete", onStageComplete as EventListener);
       window.removeEventListener("journey-reset", onReset);
+      window.removeEventListener("pointerdown", tryStartMusic);
+      window.removeEventListener("keydown", tryStartMusic);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      void musicRef.current?.dispose();
       game?.destroy(true);
     };
   }, []);
+
+  useEffect(() => {
+    if (!musicRef.current) {
+      return;
+    }
+
+    window.localStorage.setItem(MUSIC_MUTED_STORAGE_KEY, String(musicMuted));
+    void musicRef.current.setMuted(musicMuted).then(() => {
+      if (!musicMuted) {
+        setMusicStarted(true);
+      }
+    });
+  }, [musicMuted]);
+
+  const handleMusicToggle = async () => {
+    const nextMuted = !musicMutedRef.current;
+
+    setMusicMuted(nextMuted);
+
+    if (!musicRef.current || nextMuted) {
+      return;
+    }
+
+    await musicRef.current.ensureStarted();
+    setMusicStarted(true);
+  };
 
   useEffect(() => {
     if (revealedStage === null) {
@@ -168,6 +239,7 @@ export function GameCanvas() {
   const revealedMilestone = revealedStage === null ? null : (milestones[revealedStage] ?? null);
   const activeMilestoneUnlocked = completedStages.includes(activeIndex);
   const completedJourney = completedStages.includes(milestones.length - 1);
+  const musicLabel = musicMuted ? "Music off" : musicStarted ? "Music on" : "Tap to start music";
 
   return (
     <>
@@ -193,6 +265,16 @@ export function GameCanvas() {
               Stage {activeIndex + 1}/{milestones.length}
             </div>
           </div>
+
+          <button
+            type="button"
+            className="music-toggle arcade-button absolute bottom-4 right-4 rounded-2xl bg-[#ffcf52] px-4 py-3 text-xs font-black uppercase tracking-[0.18em] text-[#071120]"
+            onClick={() => {
+              void handleMusicToggle();
+            }}
+          >
+            {musicLabel}
+          </button>
         </div>
 
         <div className="mt-4 flex flex-wrap gap-3 lg:hidden">

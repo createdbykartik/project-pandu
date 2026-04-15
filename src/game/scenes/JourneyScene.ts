@@ -19,7 +19,7 @@ const BOSS_HIT_COUNT = 3;
 const PLAYER_ART_HEIGHT = 94;
 const PLAYER_BODY_WIDTH = 34;
 const PLAYER_BODY_HEIGHT = 42;
-const PLAYER_ART_Y_OFFSET = 17;
+const PLAYER_ART_Y_OFFSET = -8;
 
 export class JourneyScene extends Phaser.Scene {
   private player!: Phaser.Physics.Arcade.Sprite;
