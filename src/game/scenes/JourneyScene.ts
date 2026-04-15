@@ -554,13 +554,13 @@ export class JourneyScene extends Phaser.Scene {
         this.createKangarooBackdrop(sectionX + 590, groundY - 112, accent);
         break;
       case 1:
-        this.createMetroTrainBackdrop(sectionX + 160, groundY - 132, 0xb8d7e8);
+        this.createMetroTrainBackdrop(sectionX + 160, groundY - 102, 0xb8d7e8);
         break;
       case 2:
         this.createGraduationPenguinBackdrop(sectionX + 585, groundY - 102);
         break;
       case 3:
-        this.createMetroTrainBackdrop(sectionX + 540, groundY - 126, 0x9ac7de);
+        this.createMetroTrainBackdrop(sectionX + 540, groundY - 96, 0x9ac7de);
         break;
       case 4:
         this.createHouseBackdrop(sectionX + 585, groundY - 134);

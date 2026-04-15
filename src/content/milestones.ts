@@ -8,6 +8,7 @@ export type JourneyMilestone = {
   photoPrompt: string;
   photoSrc: string;
   photoAlt: string;
+  photoOffsetY?: number;
   colors: {
     sky: number;
     hill: number;
@@ -19,7 +20,7 @@ export const milestones: JourneyMilestone[] = [
   {
     slug: "student-arrival",
     title: "Arrived in Australia as a student",
-    dateLabel: "18 Feb 2020",
+    dateLabel: "19 Feb 2020",
     levelLabel: "Arrival runway",
     summary:
       "A new country, new routines, and the first brave step into an unfamiliar future.",
@@ -46,6 +47,7 @@ export const milestones: JourneyMilestone[] = [
     photoPrompt: "First day at work or office milestone photo",
     photoSrc: "/assets/photos/02-graduate-engineer.webp",
     photoAlt: "Sravya starting as a graduate engineer at Sage Group",
+    photoOffsetY: 32,
     colors: {
       sky: 0xc9e6ef,
       hill: 0x71adc5,
@@ -82,6 +84,7 @@ export const milestones: JourneyMilestone[] = [
     photoPrompt: "Promotion announcement or proud work photo",
     photoSrc: "/assets/photos/04-promotion-control-systems.webp",
     photoAlt: "Sravya promoted to control systems engineer",
+    photoOffsetY: 32,
     colors: {
       sky: 0xcde5d0,
       hill: 0x79a980,

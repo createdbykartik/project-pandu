@@ -240,6 +240,10 @@ export function GameCanvas() {
   const activeMilestoneUnlocked = completedStages.includes(activeIndex);
   const completedJourney = completedStages.includes(milestones.length - 1);
   const musicLabel = musicMuted ? "Music off" : musicStarted ? "Music on" : "Tap to start music";
+  const activePhotoPosition = `center calc(50% + ${activeMilestone.photoOffsetY ?? 0}px)`;
+  const revealedPhotoPosition = revealedMilestone
+    ? `center calc(50% + ${revealedMilestone.photoOffsetY ?? 0}px)`
+    : "center";
 
   return (
     <>
@@ -334,6 +338,7 @@ export function GameCanvas() {
                             fill
                             sizes="(max-width: 1280px) 100vw, 360px"
                             className="object-cover"
+                            style={{ objectPosition: activePhotoPosition }}
                           />
                         ) : (
                           <div className="reward-locked-screen absolute inset-0 flex flex-col items-center justify-center bg-[radial-gradient(circle_at_top,#123868,#08111f_68%)] px-6 text-center">
@@ -448,6 +453,7 @@ export function GameCanvas() {
                     priority
                     sizes="(max-width: 768px) 100vw, 720px"
                     className="object-cover"
+                    style={{ objectPosition: revealedPhotoPosition }}
                   />
                   <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(8,17,31,0.02),rgba(8,17,31,0.08)_45%,rgba(8,17,31,0.46))]" />
                 </div>
