@@ -1,26 +1,110 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #08111f;
+  --foreground: #f7f1cf;
+  --panel: #102443;
+  --panel-2: #17335f;
+  --panel-3: #1d4d7c;
+  --border: #071120;
+  --gold: #ffcf52;
+  --orange: #ff8c42;
+  --red: #f14d52;
+  --mint: #39d98a;
+  --cyan: #49d6ff;
+  --violet: #8f7cff;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-space-grotesk);
+  --font-display: var(--font-bungee);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-space-grotesk), sans-serif;
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(73, 214, 255, 0.16), transparent 20%),
+    radial-gradient(circle at 80% 0%, rgba(255, 140, 66, 0.18), transparent 22%),
+    radial-gradient(circle at 50% 100%, rgba(143, 124, 255, 0.18), transparent 28%),
+    linear-gradient(180deg, #0b1730 0%, #09101d 55%, #070b12 100%);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+::selection {
+  background: rgba(255, 207, 82, 0.32);
+}
+
+.journey-shell {
+  position: relative;
+  isolation: isolate;
+}
+
+.journey-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 24px 24px;
+  opacity: 0.32;
+}
+
+.arcade-panel {
+  background: linear-gradient(180deg, var(--panel-2), var(--panel));
+  border: 4px solid var(--border);
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.08) inset,
+    0 12px 0 rgba(0, 0, 0, 0.25),
+    0 24px 40px rgba(0, 0, 0, 0.32);
+}
+
+.arcade-inset {
+  background: linear-gradient(180deg, rgba(12, 28, 50, 0.92), rgba(8, 18, 33, 0.94));
+  border: 3px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.35);
+}
+
+.arcade-button {
+  border: 3px solid var(--border);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.28);
+  transition:
+    transform 140ms ease,
+    box-shadow 140ms ease,
+    filter 140ms ease;
+}
+
+.arcade-button:hover {
+  filter: brightness(1.06);
+}
+
+.arcade-button:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.28);
+}
+
+.display-font {
+  font-family: var(--font-bungee), cursive;
+  letter-spacing: 0.04em;
 }

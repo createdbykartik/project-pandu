@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Journey of Stars
 
-## Getting Started
+Journey of Stars is a Next.js and Phaser web app that turns a real immigrant journey in Australia into an interactive side-scrolling story game. Each level represents a milestone and ends with an achievement spotlight designed to show a real photo and short story.
 
-First, run the development server:
+## Current Build
+
+- Landing page with the game concept and milestone timeline
+- Playable `/game` route with a Phaser-powered side-scrolling prototype
+- Keyboard controls for desktop and on-screen controls for mobile
+- Milestone content model for 8 life chapters
+- Placeholder photo panel for each milestone until final images are provided
+
+## Milestones
+
+1. Arrived in Australia as a student
+2. Started as a graduate engineer at Sage Group
+3. Graduated from the University of Melbourne
+4. Promoted to control systems engineer
+5. Bought a house
+6. Bought a first car
+7. Received Permanent Residency
+8. Received Australian Citizenship
+
+## Stack
+
+- Next.js 16 with App Router
+- TypeScript
+- Tailwind CSS v4
+- Phaser 4
+
+## Commands
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run build
+npm run lint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Notes
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- The current build uses illustrated placeholder visuals for the gameplay world.
+- Real milestone photos can be wired into the spotlight panel once assets are provided.
+- Progress is currently stored locally in the browser.
