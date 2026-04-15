@@ -108,3 +108,62 @@ button {
   font-family: var(--font-bungee), cursive;
   letter-spacing: 0.04em;
 }
+
+.reward-locked-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(130deg, transparent 0%, rgba(73, 214, 255, 0.12) 42%, transparent 64%),
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 100% 100%, 18px 18px, 18px 18px;
+  animation: reward-scan 2.8s linear infinite;
+}
+
+.reward-locked-screen > * {
+  position: relative;
+  z-index: 1;
+}
+
+.reveal-modal {
+  animation: reveal-pop 220ms ease-out;
+}
+
+.caption-reveal {
+  animation: caption-rise 420ms ease-out 90ms both;
+}
+
+@keyframes reward-scan {
+  0% {
+    transform: translateX(-8%);
+  }
+
+  100% {
+    transform: translateX(8%);
+  }
+}
+
+@keyframes reveal-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.96);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes caption-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

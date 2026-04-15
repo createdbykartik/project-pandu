@@ -16,9 +16,14 @@ type JourneyControlEvent = CustomEvent<{
 const SEGMENT_WIDTH = 760;
 const JUMP_VELOCITY = -680;
 const BOSS_HIT_COUNT = 3;
+const PLAYER_ART_HEIGHT = 94;
+const PLAYER_BODY_WIDTH = 34;
+const PLAYER_BODY_HEIGHT = 42;
+const PLAYER_ART_Y_OFFSET = 17;
 
 export class JourneyScene extends Phaser.Scene {
   private player!: Phaser.Physics.Arcade.Sprite;
+  private playerArt!: Phaser.GameObjects.Image;
   private playerBody!: Phaser.Physics.Arcade.Body;
   private summitBoss?: Phaser.Physics.Arcade.Sprite;
   private summitBossBody?: Phaser.Physics.Arcade.Body;
@@ -56,6 +61,10 @@ export class JourneyScene extends Phaser.Scene {
     super("JourneyScene");
   }
 
+  preload() {
+    this.load.image("player-penguin", "/assets/game/penguin-player.png");
+  }
+
   create() {
     const worldWidth = milestones.length * SEGMENT_WIDTH + 720;
     const height = this.scale.height;
@@ -77,15 +86,26 @@ export class JourneyScene extends Phaser.Scene {
     const ground = this.add.rectangle(worldWidth / 2, groundY + 50, worldWidth, 100, 0x183227);
     this.physics.add.existing(ground, true);
 
-    this.createPenguinTexture();
+    this.createPlayerBodyTexture();
     this.createBossPenguinTexture();
-    this.player = this.physics.add.sprite(120, groundY - 94, "player-penguin");
+    this.player = this.physics.add.sprite(120, groundY - PLAYER_BODY_HEIGHT / 2, "player-body");
+    this.player.setAlpha(0.02);
     this.playerBody = this.player.body as Phaser.Physics.Arcade.Body;
-    this.playerBody.setSize(42, 58);
-    this.playerBody.setOffset(11, 8);
+    this.playerBody.setSize(PLAYER_BODY_WIDTH, PLAYER_BODY_HEIGHT);
+    this.playerBody.setOffset(0, 0);
     this.playerBody.setCollideWorldBounds(true);
     this.playerBody.setMaxVelocity(360, 960);
     this.playerBody.setDragX(1100);
+
+    this.playerArt = this.add.image(this.player.x, this.playerBody.bottom + PLAYER_ART_Y_OFFSET, "player-penguin");
+    this.playerArt
+      .setDisplaySize(
+        (this.textures.get("player-penguin").getSourceImage() as { width: number; height: number }).width /
+          (this.textures.get("player-penguin").getSourceImage() as { width: number; height: number }).height *
+          PLAYER_ART_HEIGHT,
+        PLAYER_ART_HEIGHT,
+      )
+      .setDepth(3);
 
     this.physics.add.collider(this.player, ground);
 
@@ -138,6 +158,7 @@ export class JourneyScene extends Phaser.Scene {
         .setDepth(-4);
 
       this.createBackgroundPenguins(sectionX, groundY, index);
+      this.createStageBackdrop(sectionX, groundY, index, milestone.colors.accent);
 
       if (isFinalStage) {
         this.createFinalSummit(sectionX, groundY, milestone.colors.accent);
@@ -255,8 +276,9 @@ export class JourneyScene extends Phaser.Scene {
     this.updateSummitBoss();
 
     const tilt = Phaser.Math.Clamp(this.playerBody.velocity.x / 26, -9, 9);
-    this.player.setAngle(tilt);
-    this.player.setFlipX(velocityX < 0);
+    this.playerArt.setPosition(this.player.x, this.playerBody.bottom + PLAYER_ART_Y_OFFSET);
+    this.playerArt.setAngle(tilt);
+    this.playerArt.setFlipX(velocityX < 0);
 
     if (this.bossHealthText) {
       const nearFinalStage = this.player.x >= this.finalStageStartX - 120;
@@ -295,6 +317,7 @@ export class JourneyScene extends Phaser.Scene {
     this.reachedMilestones.add(index);
     this.activeMilestoneIndex = index;
     this.emitMilestone(index);
+    this.emitStageComplete(index);
 
     if (index === milestones.length - 1) {
       this.cameras.main.flash(400, 247, 196, 92, true);
@@ -304,6 +327,18 @@ export class JourneyScene extends Phaser.Scene {
   private emitMilestone(index: number) {
     window.dispatchEvent(
       new CustomEvent("journey-milestone", {
+        detail: {
+          index,
+          stars: this.starsCollected,
+          totalStars: milestones.length,
+        },
+      }),
+    );
+  }
+
+  private emitStageComplete(index: number) {
+    window.dispatchEvent(
+      new CustomEvent("journey-stage-complete", {
         detail: {
           index,
           stars: this.starsCollected,
@@ -388,8 +423,8 @@ export class JourneyScene extends Phaser.Scene {
     this.playerDamageCooldownUntil = this.time.now + 700;
     this.playerBody.setVelocityX(this.player.x < this.summitBoss.x ? -260 : 260);
     this.playerBody.setVelocityY(-260);
-    this.player.setTint(0xf14d52);
-    this.time.delayedCall(180, () => this.player.clearTint());
+    this.playerArt.setTint(0xf14d52);
+    this.time.delayedCall(180, () => this.playerArt.clearTint());
     this.showSummitBanner("Ouch. Jump on the guardian.", "#f14d52");
   }
 
@@ -470,41 +505,15 @@ export class JourneyScene extends Phaser.Scene {
     }
   }
 
-  private createPenguinTexture() {
-    if (this.textures.exists("player-penguin")) {
+  private createPlayerBodyTexture() {
+    if (this.textures.exists("player-body")) {
       return;
     }
 
     const graphics = this.make.graphics({ x: 0, y: 0 }, false);
-
-    graphics.fillStyle(0x101820, 1);
-    graphics.fillEllipse(32, 42, 40, 52);
-
-    graphics.fillStyle(0xf8f7f2, 1);
-    graphics.fillEllipse(32, 46, 24, 30);
-
-    graphics.fillStyle(0x101820, 1);
-    graphics.fillCircle(24, 19, 10);
-    graphics.fillCircle(40, 19, 10);
-    graphics.fillEllipse(32, 24, 32, 28);
-
-    graphics.fillStyle(0xf8f7f2, 1);
-    graphics.fillEllipse(32, 27, 18, 15);
-
-    graphics.fillStyle(0xffb347, 1);
-    graphics.fillTriangle(32, 30, 26, 35, 38, 35);
-    graphics.fillEllipse(22, 66, 10, 6);
-    graphics.fillEllipse(42, 66, 10, 6);
-
-    graphics.fillStyle(0x7a8aa0, 1);
-    graphics.fillEllipse(14, 41, 10, 22);
-    graphics.fillEllipse(50, 41, 10, 22);
-
-    graphics.fillStyle(0x17212c, 1);
-    graphics.fillCircle(28, 23, 2);
-    graphics.fillCircle(36, 23, 2);
-
-    graphics.generateTexture("player-penguin", 64, 72);
+    graphics.fillStyle(0xffffff, 1);
+    graphics.fillRect(0, 0, PLAYER_BODY_WIDTH, PLAYER_BODY_HEIGHT);
+    graphics.generateTexture("player-body", PLAYER_BODY_WIDTH, PLAYER_BODY_HEIGHT);
     graphics.destroy();
   }
 
@@ -523,7 +532,7 @@ export class JourneyScene extends Phaser.Scene {
       );
 
       sprite
-        .setScale(penguin.scale)
+        .setDisplaySize(64 * penguin.scale, 72 * penguin.scale)
         .setAlpha(penguin.alpha)
         .setDepth(-4)
         .setTint(index % 2 === 0 ? 0xd8ecff : 0xf7f1cf);
@@ -532,6 +541,118 @@ export class JourneyScene extends Phaser.Scene {
         sprite.setFlipX(true);
       }
     });
+  }
+
+  private createStageBackdrop(
+    sectionX: number,
+    groundY: number,
+    milestoneIndex: number,
+    accent: number,
+  ) {
+    switch (milestoneIndex) {
+      case 0:
+        this.createKangarooBackdrop(sectionX + 590, groundY - 112, accent);
+        break;
+      case 1:
+        this.createMetroTrainBackdrop(sectionX + 160, groundY - 132, 0xb8d7e8);
+        break;
+      case 2:
+        this.createGraduationPenguinBackdrop(sectionX + 585, groundY - 102);
+        break;
+      case 3:
+        this.createMetroTrainBackdrop(sectionX + 540, groundY - 126, 0x9ac7de);
+        break;
+      case 4:
+        this.createHouseBackdrop(sectionX + 585, groundY - 134);
+        break;
+      case 5:
+        this.createCarBackdrop(sectionX + 585, groundY - 92);
+        break;
+      case 6:
+        this.createPermanentStampBackdrop(sectionX + 580, groundY - 140);
+        break;
+      case 7:
+        this.createAustralianFlagBackdrop(sectionX + 145, groundY - 178);
+        break;
+      default:
+        break;
+    }
+  }
+
+  private createKangarooBackdrop(x: number, y: number, accent: number) {
+    const tint = Phaser.Display.Color.IntegerToColor(accent).lighten(20).color;
+    this.add.ellipse(x, y, 86, 44, tint, 0.82).setDepth(-3);
+    this.add.ellipse(x + 34, y - 26, 36, 26, tint, 0.82).setDepth(-3);
+    this.add.triangle(x + 46, y - 42, 0, 18, 10, 0, 20, 18, tint, 0.82).setDepth(-3);
+    this.add.triangle(x + 58, y - 40, 0, 18, 10, 0, 20, 18, tint, 0.82).setDepth(-3);
+    this.add.rectangle(x - 26, y + 26, 6, 30, tint, 0.82).setDepth(-3).setAngle(10);
+    this.add.rectangle(x - 4, y + 28, 6, 32, tint, 0.82).setDepth(-3).setAngle(-8);
+    this.add.rectangle(x + 68, y - 4, 70, 8, tint, 0.82).setDepth(-3).setAngle(-32);
+  }
+
+  private createMetroTrainBackdrop(x: number, y: number, bodyColor: number) {
+    this.add.rectangle(x, y, 172, 54, bodyColor, 0.85).setDepth(-3);
+    this.add.rectangle(x, y - 18, 128, 12, 0xeaf6ff, 0.92).setDepth(-2);
+    [-48, -16, 16, 48].forEach((offset) => {
+      this.add.rectangle(x + offset, y - 2, 22, 18, 0x274666, 0.92).setDepth(-2);
+    });
+    this.add.rectangle(x - 64, y + 4, 16, 28, 0x274666, 0.92).setDepth(-2);
+    this.add.circle(x - 52, y + 29, 10, 0x102443).setDepth(-2);
+    this.add.circle(x + 52, y + 29, 10, 0x102443).setDepth(-2);
+  }
+
+  private createGraduationPenguinBackdrop(x: number, y: number) {
+    this.add
+      .image(x, y, "player-penguin")
+      .setDisplaySize(78, 88)
+      .setAlpha(0.9)
+      .setDepth(-2);
+    this.add.rectangle(x, y - 44, 44, 8, 0x101820, 0.96).setDepth(-1).setAngle(-10);
+    this.add.rectangle(x + 11, y - 34, 10, 10, 0x101820, 0.96).setDepth(-1).setAngle(-10);
+    this.add.line(x + 16, y - 38, 0, 0, 0, 22, 0xffcf52, 0.95).setDepth(-1);
+    this.add.circle(x + 16, y - 14, 3, 0xffcf52).setDepth(-1);
+  }
+
+  private createHouseBackdrop(x: number, y: number) {
+    this.add.rectangle(x, y, 120, 82, 0xf3d9b1, 0.92).setDepth(-3);
+    this.add.triangle(x, y - 44, 0, 36, 60, -18, 120, 36, 0xb95f3b, 0.95).setDepth(-2);
+    this.add.rectangle(x - 22, y + 2, 24, 24, 0xbfe5ff, 0.94).setDepth(-2);
+    this.add.rectangle(x + 22, y + 2, 24, 24, 0xbfe5ff, 0.94).setDepth(-2);
+    this.add.rectangle(x, y + 22, 24, 38, 0x805336, 0.96).setDepth(-2);
+  }
+
+  private createCarBackdrop(x: number, y: number) {
+    this.add.rectangle(x, y, 112, 26, 0x2d78d6, 0.94).setDepth(-3);
+    this.add.rectangle(x - 10, y - 18, 54, 22, 0x2d78d6, 0.94).setDepth(-3);
+    this.add.rectangle(x - 18, y - 18, 18, 16, 0xbde8ff, 0.94).setDepth(-2);
+    this.add.rectangle(x + 10, y - 18, 22, 16, 0xbde8ff, 0.94).setDepth(-2);
+    this.add.circle(x - 30, y + 16, 12, 0x102443).setDepth(-2);
+    this.add.circle(x + 34, y + 16, 12, 0x102443).setDepth(-2);
+    this.add.circle(x - 30, y + 16, 5, 0xdce5f4).setDepth(-1);
+    this.add.circle(x + 34, y + 16, 5, 0xdce5f4).setDepth(-1);
+  }
+
+  private createPermanentStampBackdrop(x: number, y: number) {
+    this.add.rectangle(x, y, 146, 84, 0xf8e6b8, 0.9).setDepth(-3).setAngle(-12);
+    this.add.rectangle(x, y, 120, 58, 0xd94d52, 0.18).setDepth(-2).setAngle(-12);
+    this.add.text(x, y - 2, "PR", {
+      fontFamily: "var(--font-space-grotesk)",
+      fontSize: "34px",
+      color: "#d94d52",
+      fontStyle: "700",
+    }).setOrigin(0.5).setDepth(-1).setAngle(-12);
+  }
+
+  private createAustralianFlagBackdrop(x: number, y: number) {
+    this.add.rectangle(x - 34, y + 48, 6, 126, 0xe9f2ff, 0.95).setDepth(-3);
+    this.add.rectangle(x + 18, y, 104, 62, 0x2248a5, 0.94).setDepth(-3);
+    this.add.rectangle(x - 8, y - 15, 40, 30, 0x17347d, 0.98).setDepth(-2);
+    this.add.line(x - 8, y - 15, -20, -15, 20, 15, 0xffffff, 0.95).setDepth(-1);
+    this.add.line(x - 8, y - 15, -20, 15, 20, -15, 0xffffff, 0.95).setDepth(-1);
+    this.add.line(x - 8, y - 15, 0, -15, 0, 15, 0xf14d52, 0.95).setDepth(-1);
+    this.add.line(x - 8, y - 15, -20, 0, 20, 0, 0xf14d52, 0.95).setDepth(-1);
+    this.add.star(x + 30, y - 10, 5, 5, 11, 0xffffff).setDepth(-1);
+    this.add.star(x + 48, y + 14, 5, 4, 9, 0xffffff).setDepth(-1);
   }
 
   private createFinalSummit(sectionX: number, groundY: number, color: number) {

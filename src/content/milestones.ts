@@ -6,6 +6,8 @@ export type JourneyMilestone = {
   summary: string;
   story: string;
   photoPrompt: string;
+  photoSrc: string;
+  photoAlt: string;
   colors: {
     sky: number;
     hill: number;
@@ -24,6 +26,8 @@ export const milestones: JourneyMilestone[] = [
     story:
       "This chapter begins with arrival: carrying ambition, uncertainty, and the courage to start over in a new country.",
     photoPrompt: "Airport arrival or early student life photo",
+    photoSrc: "/assets/photos/01-student-arrival.webp",
+    photoAlt: "Sravya arriving in Australia as a student",
     colors: {
       sky: 0xf7d8a8,
       hill: 0xeca35f,
@@ -40,6 +44,8 @@ export const milestones: JourneyMilestone[] = [
     story:
       "The second chapter marks the shift from student ambition to professional contribution, where theory met real systems and teams.",
     photoPrompt: "First day at work or office milestone photo",
+    photoSrc: "/assets/photos/02-graduate-engineer.webp",
+    photoAlt: "Sravya starting as a graduate engineer at Sage Group",
     colors: {
       sky: 0xc9e6ef,
       hill: 0x71adc5,
@@ -56,6 +62,8 @@ export const milestones: JourneyMilestone[] = [
     story:
       "Graduation is the summit of the academic chapter, proof that long effort, sacrifice, and focus turned into a formal achievement.",
     photoPrompt: "Graduation ceremony photo",
+    photoSrc: "/assets/photos/03-masters-graduation.webp",
+    photoAlt: "Sravya graduating from the University of Melbourne",
     colors: {
       sky: 0xd9d2ff,
       hill: 0xa79de5,
@@ -72,6 +80,8 @@ export const milestones: JourneyMilestone[] = [
     story:
       "This promotion chapter reflects growth: not only doing the work, but being trusted to shape it with confidence and expertise.",
     photoPrompt: "Promotion announcement or proud work photo",
+    photoSrc: "/assets/photos/04-promotion-control-systems.webp",
+    photoAlt: "Sravya promoted to control systems engineer",
     colors: {
       sky: 0xcde5d0,
       hill: 0x79a980,
@@ -88,6 +98,8 @@ export const milestones: JourneyMilestone[] = [
     story:
       "The home chapter is about stability and belonging, where achievement becomes a physical space built for the future.",
     photoPrompt: "House keys or new home photo",
+    photoSrc: "/assets/photos/05-first-home.webp",
+    photoAlt: "Sravya with her first home",
     colors: {
       sky: 0xf6d7b3,
       hill: 0xd98745,
@@ -104,6 +116,8 @@ export const milestones: JourneyMilestone[] = [
     story:
       "Buying the first car marks mobility and freedom, another practical milestone that also carries emotional weight.",
     photoPrompt: "First car photo",
+    photoSrc: "/assets/photos/06-first-car.webp",
+    photoAlt: "Sravya with her first car",
     colors: {
       sky: 0xc7ddf8,
       hill: 0x6a95c8,
@@ -120,6 +134,8 @@ export const milestones: JourneyMilestone[] = [
     story:
       "Permanent residency is one of the biggest turning points in the journey, reshaping the future with security, recognition, and relief.",
     photoPrompt: "Permanent residency confirmation or celebration photo",
+    photoSrc: "/assets/photos/07-permanent-residency.webp",
+    photoAlt: "Sravya receiving permanent residency",
     colors: {
       sky: 0xd4f1e7,
       hill: 0x6cb39a,
@@ -136,6 +152,8 @@ export const milestones: JourneyMilestone[] = [
     story:
       "Citizenship is the closing chapter of this first arc: a moment of pride, permanence, and recognition for everything it took to get here.",
     photoPrompt: "Citizenship ceremony photo",
+    photoSrc: "/assets/photos/08-citizenship.webp",
+    photoAlt: "Sravya at her Australian citizenship ceremony",
     colors: {
       sky: 0xffddb7,
       hill: 0xf09a5e,
